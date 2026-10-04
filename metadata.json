@@ -1,0 +1,6 @@
+{
+  "name": "Dental Clinic Patient Management & WhatsApp Automation",
+  "description": "A modern, professional dental clinic patient management and WhatsApp automation system for registrations, treatment tracking, follow-ups, and automated messaging.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
