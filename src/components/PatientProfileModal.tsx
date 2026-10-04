@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Patient, Visit, Followup, MessageLog, PatientStatus } from '../types';
 import { api } from '../api';
+import { localClinicStore } from '../utils/localClinicStore';
 import { getPastelTreatmentConfig } from '../utils/treatmentColors';
 
 interface PatientProfileModalProps {
@@ -40,9 +41,9 @@ export const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
     visits: Visit[];
     followups: Followup[];
     messages: MessageLog[];
-  } | null>(null);
+  } | null>(() => localClinicStore.getPatientById(patientId));
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Quick custom WhatsApp message modal inside profile
@@ -56,7 +57,7 @@ export const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
 
   const loadDetails = async () => {
     try {
-      setLoading(true);
+      if (!data) setLoading(true);
       setError(null);
       const res = await api.getPatientById(patientId);
       setData(res);

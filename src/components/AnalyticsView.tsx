@@ -25,6 +25,7 @@ import {
 } from 'recharts';
 import { AnalyticsData } from '../types';
 import { api } from '../api';
+import { localClinicStore } from '../utils/localClinicStore';
 import { PASTEL_TREATMENT_PALETTES } from '../utils/treatmentColors';
 
 const COLORS = [
@@ -39,8 +40,10 @@ const COLORS = [
 
 export const AnalyticsView: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState('2026-09');
-  const [data, setData] = useState<AnalyticsData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<AnalyticsData | null>(() =>
+    localClinicStore.getAnalytics('2026-09')
+  );
+  const [loading, setLoading] = useState(false);
 
   const fetchAnalytics = async (m: string) => {
     try {

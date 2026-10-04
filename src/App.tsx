@@ -17,6 +17,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { api } from './api';
+import { localClinicStore } from './utils/localClinicStore';
 import {
   Patient,
   Followup,
@@ -41,17 +42,25 @@ type NavTab = 'dashboard' | 'patients' | 'followups' | 'whatsapp' | 'analytics' 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<NavTab>('dashboard');
 
-  // Core data states
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
-  const [followups, setFollowups] = useState<Followup[]>([]);
-  const [todayFollowups, setTodayFollowups] = useState<Followup[]>([]);
-  const [messages, setMessages] = useState<MessageLog[]>([]);
-  const [settings, setSettings] = useState<ClinicSettings | null>(null);
+  // Core data states initialized immediately for zero-latency browser load
+  const [stats, setStats] = useState<DashboardStats | null>(() =>
+    localClinicStore.getDashboardStats()
+  );
+  const [patients, setPatients] = useState<Patient[]>(() => localClinicStore.getPatients());
+  const [filteredPatients, setFilteredPatients] = useState<Patient[]>(() =>
+    localClinicStore.getPatients()
+  );
+  const [followups, setFollowups] = useState<Followup[]>(() => localClinicStore.getFollowups());
+  const [todayFollowups, setTodayFollowups] = useState<Followup[]>(() =>
+    localClinicStore.getFollowups('2026-09-16')
+  );
+  const [messages, setMessages] = useState<MessageLog[]>(() => localClinicStore.getMessages());
+  const [settings, setSettings] = useState<ClinicSettings | null>(() =>
+    localClinicStore.getSettings()
+  );
 
   // Loading & notification states
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState<{
     type: 'success' | 'info' | 'error';
     text: string;
@@ -69,7 +78,6 @@ export default function App() {
   // Load all initial data
   const loadAllData = async () => {
     try {
-      setLoading(true);
       const [statsRes, patientsRes, followupsRes, todayRes, messagesRes, settingsRes] =
         await Promise.all([
           api.getStats(),
